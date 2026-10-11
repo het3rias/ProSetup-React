@@ -1,0 +1,85 @@
+/* ============================================
+   ProSetup - Estilos personalizados
+   La mayoría del diseño (grilla, responsividad, componentes) viene de Bootstrap.
+   Aquí solo ajustamos colores y detalles (misma paleta de la Evaluación 1).
+   ============================================ */
+
+:root {
+    --ps-oscuro: #1c1f2b;
+    --ps-oscuro-2: #171a24;
+    --ps-acento: #22c1dc;
+}
+
+body { background-color: #f4f6f8; }
+
+/* ---------- Navbar ---------- */
+.navbar { background-color: var(--ps-oscuro); }
+.logo-navbar { height: 38px; width: auto; }
+.navbar .nav-link { color: #d9dbe1; }
+.navbar .nav-link:hover, .navbar .nav-link.active { color: var(--ps-acento); }
+.navbar .dropdown-toggle.btn-link { text-decoration: none; }
+.btn-cart { background-color: var(--ps-acento); color: #000 !important; font-weight: bold; }
+.btn-cart:hover { background-color: #1aa9c1; }
+
+/* ---------- Hero ---------- */
+.hero {
+    background: linear-gradient(135deg, var(--ps-oscuro) 0%, #263048 100%);
+    color: white;
+    padding: 70px 20px;
+    text-align: center;
+}
+.hero h1 { font-weight: bold; }
+
+/* ---------- Productos ---------- */
+.card-producto img, .card-categoria img { height: 180px; object-fit: contain; background: #fff; padding: 8px; }
+.card-categoria img { height: 110px; }
+.card-producto, .card-categoria, .tarjeta-acceso { transition: transform .15s ease, box-shadow .15s ease; }
+.card-producto:hover, .card-categoria:hover, .tarjeta-acceso:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.12) !important; }
+.precio { color: #0d6efd; font-weight: bold; }
+.precio-oferta { color: #dc3545; }
+.imagen-detalle { max-height: 420px; width: 100%; object-fit: contain; background: #fff; }
+.miniatura { width: 48px; height: 48px; object-fit: cover; }
+.imagen-blog { height: 220px; object-fit: cover; }
+.imagen-detalle-blog { max-height: 380px; width: 100%; object-fit: cover; }
+
+/* ---------- Footer ---------- */
+.footer-tienda { background-color: var(--ps-oscuro); color: #aaa; }
+.footer-tienda a { color: #d9dbe1; text-decoration: none; }
+.footer-tienda a:hover { color: var(--ps-acento); }
+.logo-footer { height: 34px; }
+
+/* ---------- Panel de administración: menú lateral ---------- */
+.admin-layout { display: flex; align-items: stretch; min-height: 100vh; }
+.admin-sidebar {
+    width: 230px; flex-shrink: 0; background-color: var(--ps-oscuro-2); color: #d9dbe1;
+    padding: 1.25rem 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.admin-sidebar-title { font-weight: bold; letter-spacing: .04em; text-transform: uppercase; font-size: .8rem; color: #8890a4; }
+.admin-menu a {
+    display: block; padding: .6rem 1.25rem; color: #d9dbe1; text-decoration: none; border-left: 3px solid transparent;
+}
+.admin-menu a:hover { background-color: #232838; }
+.admin-menu a.activo { background-color: #232838; border-left-color: var(--ps-acento); color: var(--ps-acento); font-weight: 600; }
+.admin-sidebar-footer { margin-top: 1.5rem; border-top: 1px solid #2a2f40; padding-top: 1rem; display: flex; flex-direction: column; }
+.admin-content { flex: 1; padding: 1.75rem; min-width: 0; }
+.admin-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: .5rem; }
+.badge-rol { font-size: .85rem; }
+
+/* En móvil el menú lateral pasa arriba y se despliega con el botón ☰ */
+@media (max-width: 767.98px) {
+    .admin-layout { flex-direction: column; }
+    .admin-sidebar { width: 100%; position: static; height: auto; padding: .75rem 0; }
+    .admin-menu { display: none; }
+    .admin-menu.abierto { display: block; }
+    .admin-content { padding: 1rem; }
+}
+
+/* ---------- Impresión de boletas ---------- */
+@media print {
+    .navbar, footer, .admin-sidebar, .admin-topbar, .no-imprimir, .toast-container { display: none !important; }
+    .boleta { box-shadow: none !important; border: none !important; }
+    body { background: #fff; }
+}
+
+.buscador-navbar { max-width: 460px; }
+.navbar .navbar-collapse { justify-content: center; }
