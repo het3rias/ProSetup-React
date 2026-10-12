@@ -53,4 +53,16 @@ describe("Login", () => {
         await llenarYEnviar(userEvent.setup(), "cliente@gmail.com", "1234");
         expect(screen.getByTestId("ruta-actual").textContent).toBe("/");
     });
+
+    it("un Cliente que venía del panel admin vuelve al inicio (no a 'Acceso denegado')", async () => {
+        renderizar(<Login />, { ruta: { pathname: "/login", state: { desde: "/admin" } }, patron: "/login" });
+        await llenarYEnviar(userEvent.setup(), "cliente@gmail.com", "1234");
+        expect(screen.getByTestId("ruta-actual").textContent).toBe("/");
+    });
+
+    it("un Cliente que venía del checkout vuelve al checkout", async () => {
+        renderizar(<Login />, { ruta: { pathname: "/login", state: { desde: "/checkout" } }, patron: "/login" });
+        await llenarYEnviar(userEvent.setup(), "cliente@gmail.com", "1234");
+        expect(screen.getByTestId("ruta-actual").textContent).toBe("/checkout");
+    });
 });

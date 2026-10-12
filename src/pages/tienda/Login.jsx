@@ -22,9 +22,14 @@ export default function Login() {
             setErrorGeneral("Correo o contraseña incorrectos.");
             return;
         }
-        // Admin y Vendedor van al panel; el Cliente vuelve a donde estaba (o al inicio)
-        if (usuario.tipoUsuario !== "Cliente") navegar("/admin");
-        else navegar(ubicacion.state?.desde || "/");
+        // Admin y Vendedor van al panel. El Cliente vuelve a donde estaba (ej: /checkout),
+        // salvo que venga del panel de administración, al que no tiene acceso: ahí va al inicio.
+        if (usuario.tipoUsuario !== "Cliente") {
+            navegar("/admin");
+            return;
+        }
+        const desde = ubicacion.state?.desde;
+        navegar(desde && !desde.startsWith("/admin") ? desde : "/");
     };
 
     return (

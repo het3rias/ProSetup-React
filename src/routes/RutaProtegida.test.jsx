@@ -17,6 +17,7 @@ describe("RutaProtegida", () => {
     it("un Cliente ve 'Acceso denegado'", () => {
         renderizar(protegido, { ruta: "/admin", patron: "/admin", usuario: "cliente@gmail.com" });
         expect(screen.getByTestId("acceso-denegado")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Volver a la tienda" })).toBeInTheDocument();
     });
 
     it("un Vendedor puede entrar", () => {
