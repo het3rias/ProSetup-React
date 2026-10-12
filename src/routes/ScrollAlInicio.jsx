@@ -1,0 +1,9 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
+/** Al cambiar de página, vuelve al inicio (como pasaba al navegar entre archivos .html). */
+export default function ScrollAlInicio() {
+    const { pathname } = useLocation();
+    useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+    return null;
+}
