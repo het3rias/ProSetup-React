@@ -4,7 +4,7 @@
    Funciones PURAS: reciben datos y devuelven un objeto de errores
    { campo: "mensaje" }. Si el objeto está vacío, los datos son válidos.
    Al no tocar el DOM se pueden usar en cualquier componente React
-   y probar fácilmente con Vitest.
+   y probar fácilmente con Jasmine.
    ============================================ */
 
 // Solo se aceptan correos @duoc.cl, @profesor.duoc.cl o @gmail.com

@@ -1,5 +1,4 @@
 /* Pruebas de renderizado de las vistas públicas (navegación entre páginas de la tienda) */
-import { describe, it, expect } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import { Rutas } from "../../App.jsx";
 import { carritoDB, productosDB } from "../../data/db.js";

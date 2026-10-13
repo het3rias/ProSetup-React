@@ -1,5 +1,4 @@
-/* Pruebas de un HOOK personalizado con renderHook (igual que useContador en clases) */
-import { describe, it, expect } from "vitest";
+/* Pruebas de un HOOK personalizado con renderHook y act de React Testing Library */
 import { renderHook, act } from "@testing-library/react";
 import { useFormulario } from "./useFormulario.js";
 import { validarContacto } from "../utils/validaciones.js";

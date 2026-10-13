@@ -1,5 +1,4 @@
 /* Pruebas de LÓGICA: funciones de validación (reutilizadas de la Evaluación 1) */
-import { describe, it, expect, vi } from "vitest";
 import {
     calcularDigitoVerificador, validarRun, validarCorreo, validarLogin, validarUsuario,
     validarProducto, validarContacto, validarCheckout, validarCategoria, esValido
@@ -56,7 +55,7 @@ describe("Validaciones - usuario", () => {
     });
 
     it("usa la función inyectada (mock) para detectar RUN duplicado", () => {
-        const existeRun = vi.fn().mockReturnValue(true);
+        const existeRun = jasmine.createSpy("existeRun").and.returnValue(true);
         const errores = validarUsuario(valido, { existeRun });
         expect(existeRun).toHaveBeenCalledWith("213456784");
         expect(errores.run).toContain("Ya existe");
@@ -75,7 +74,7 @@ describe("Validaciones - producto, categoría, contacto y checkout", () => {
 
     it("rechaza stock negativo o decimal y código corto", () => {
         const errores = validarProducto({ codigo: "AB", nombre: "X", precio: "10", precioOferta: "", stock: "1.5", stockCritico: "-1", categoria: "" });
-        expect(Object.keys(errores)).toEqual(expect.arrayContaining(["codigo", "stock", "stockCritico", "categoria"]));
+        expect(Object.keys(errores)).toEqual(jasmine.arrayContaining(["codigo", "stock", "stockCritico", "categoria"]));
     });
 
     it("categoría: nombre mínimo 3 caracteres y sin duplicados", () => {

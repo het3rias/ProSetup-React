@@ -1,5 +1,4 @@
 /* Pruebas del archivo de datos (CRUD sobre localStorage) */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { categoriasDB, ordenesDB, productosDB, reiniciarDB, sesionDB, suscribir, usuariosDB, carritoDB } from "./db.js";
 
 describe("Base de datos simulada (db.js)", () => {
@@ -25,7 +24,7 @@ describe("Base de datos simulada (db.js)", () => {
 
     it("lista ofertas y productos con stock crítico", () => {
         expect(productosDB.listarOfertas().every(p => p.precioOferta < p.precio)).toBe(true);
-        expect(productosDB.listarCriticos().map(p => p.codigo)).toEqual(expect.arrayContaining(["SIL-001", "ACC-004"]));
+        expect(productosDB.listarCriticos().map(p => p.codigo)).toEqual(jasmine.arrayContaining(["SIL-001", "ACC-004"]));
     });
 
     it("descuenta stock después de una compra", () => {
@@ -60,7 +59,7 @@ describe("Base de datos simulada (db.js)", () => {
     });
 
     it("avisa a los suscriptores cuando cambian los datos (tiempo real)", () => {
-        const espia = vi.fn();
+        const espia = jasmine.createSpy("espia");
         const desuscribir = suscribir(espia);
         carritoDB.guardar([{ id: 1, cantidad: 1 }]);
         sesionDB.iniciar("admin@duoc.cl");

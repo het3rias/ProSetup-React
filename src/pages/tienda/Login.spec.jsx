@@ -1,5 +1,4 @@
-/* Pruebas con MOCKS (vi.spyOn) y renderizado condicional del error */
-import { describe, it, expect, vi } from "vitest";
+/* Pruebas con MOCKS (spyOn) y renderizado condicional del error */
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Login from "./Login.jsx";
@@ -23,7 +22,7 @@ describe("Login", () => {
     it("muestra el error solo cuando las credenciales son incorrectas (mock de autenticar)", async () => {
         renderLogin();
         const user = userEvent.setup();
-        const autenticar = vi.spyOn(usuariosDB, "autenticar").mockReturnValue(null);
+        const autenticar = spyOn(usuariosDB, "autenticar").and.returnValue(null);
 
         await llenarYEnviar(user, "ana@gmail.com", "1234");
 
@@ -34,7 +33,7 @@ describe("Login", () => {
     it("no llama a la base de datos si el formulario es inválido", async () => {
         renderLogin();
         const user = userEvent.setup();
-        const autenticar = vi.spyOn(usuariosDB, "autenticar");
+        const autenticar = spyOn(usuariosDB, "autenticar").and.callThrough();
 
         await llenarYEnviar(user, "ana@hotmail.com", "12");
 

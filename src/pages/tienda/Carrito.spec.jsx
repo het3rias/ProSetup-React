@@ -1,5 +1,4 @@
 /* Pruebas de integración: carrito + contexto + navbar (estado compartido) */
-import { describe, it, expect, vi } from "vitest";
 import { act, fireEvent, screen, within } from "@testing-library/react";
 import Carrito from "./Carrito.jsx";
 import Navbar from "../../components/layout/Navbar.jsx";
@@ -42,7 +41,7 @@ describe("Carrito de compras", () => {
 
     it("pide confirmación antes de vaciar (mock de window.confirm)", () => {
         renderizar(<Carrito />, { preparar: () => carritoDB.guardar([{ id: 2, cantidad: 1 }]) });
-        const confirmar = vi.spyOn(window, "confirm").mockReturnValue(false);
+        const confirmar = spyOn(window, "confirm").and.returnValue(false);
         fireEvent.click(screen.getByRole("button", { name: "Vaciar carrito" }));
         expect(confirmar).toHaveBeenCalled();
         expect(carritoDB.obtener().length).toBe(1);

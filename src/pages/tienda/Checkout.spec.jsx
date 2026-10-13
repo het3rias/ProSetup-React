@@ -1,5 +1,4 @@
 /* Pruebas del flujo de compra: autocompletado, envío y resultado del pago */
-import { describe, it, expect, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import Checkout from "./Checkout.jsx";
 import { carritoDB, ordenesDB, productosDB } from "../../data/db.js";
@@ -45,7 +44,7 @@ describe("Checkout", () => {
 
     it("no procesa el pago si faltan datos obligatorios", () => {
         renderizar(<Checkout />, opciones());
-        const crear = vi.spyOn(ordenesDB, "crear");
+        const crear = spyOn(ordenesDB, "crear").and.callThrough();
         fireEvent.click(screen.getByRole("button", { name: /Pagar ahora/ }));
         expect(crear).not.toHaveBeenCalled();
         expect(screen.getByText("La calle es obligatoria.")).toBeInTheDocument();

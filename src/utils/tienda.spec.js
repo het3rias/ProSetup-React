@@ -1,5 +1,4 @@
 /* Pruebas de LÓGICA: reglas del carrito, precios y envío */
-import { describe, it, expect } from "vitest";
 import { agregarItem, calcularEnvio, detallarCarrito, formatearPrecio, porcentajeDescuento, precioFinal, validarStockCarrito, COSTO_ENVIO } from "./tienda.js";
 import { productoEjemplo } from "../test/utilidades.jsx";
 

@@ -1,5 +1,4 @@
 /* Pruebas de LÓGICA: cálculos de reportes */
-import { describe, it, expect } from "vitest";
 import { productosMasVendidos, resumenVentas, ventasPorCategoria } from "./reportes.js";
 
 const ordenes = [
@@ -19,7 +18,7 @@ describe("Reportes", () => {
 
     it("ordena los productos más vendidos por unidades", () => {
         const top = productosMasVendidos(ordenes);
-        expect(top[0]).toEqual(expect.objectContaining({ id: 1, unidades: 3 }));
+        expect(top[0]).toEqual(jasmine.objectContaining({ id: 1, unidades: 3 }));
     });
 
     it("agrupa las ventas por categoría del producto", () => {

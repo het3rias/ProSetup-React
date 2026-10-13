@@ -1,5 +1,4 @@
 /* Pruebas de EVENTOS: fila del carrito */
-import { describe, it, expect, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import CartItem from "./CartItem.jsx";
 
@@ -8,7 +7,7 @@ const enTabla = (ui) => render(<table><tbody>{ui}</tbody></table>);
 
 describe("CartItem", () => {
     it("al presionar - pide cambiar la cantidad a una unidad menos", () => {
-        const onCambiarCantidad = vi.fn();
+        const onCambiarCantidad = jasmine.createSpy("onCambiarCantidad");
         enTabla(<CartItem item={item} onCambiarCantidad={onCambiarCantidad} onEliminar={() => {}} />);
         fireEvent.click(screen.getByLabelText("Disminuir Silla"));
         expect(onCambiarCantidad).toHaveBeenCalledWith(7, 1);
@@ -20,9 +19,9 @@ describe("CartItem", () => {
     });
 
     it("al presionar Eliminar llama a onEliminar con el id", () => {
-        const onEliminar = vi.fn();
+        const onEliminar = jasmine.createSpy("onEliminar");
         enTabla(<CartItem item={item} onCambiarCantidad={() => {}} onEliminar={onEliminar} />);
         fireEvent.click(screen.getByRole("button", { name: "Eliminar Silla" }));
-        expect(onEliminar).toHaveBeenCalledExactlyOnceWith(7);
+        expect(onEliminar).toHaveBeenCalledOnceWith(7);
     });
 });

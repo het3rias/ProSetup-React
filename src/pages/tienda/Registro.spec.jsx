@@ -1,5 +1,4 @@
 /* Pruebas de ESTADO y EVENTOS: select dependiente Región -> Comuna y registro */
-import { describe, it, expect } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import Registro from "./Registro.jsx";
 import { sesionDB, usuariosDB } from "../../data/db.js";

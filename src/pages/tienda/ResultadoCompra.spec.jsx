@@ -1,5 +1,4 @@
 /* Renderizado condicional según el resultado del pago */
-import { describe, it, expect } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import ResultadoCompra from "./ResultadoCompra.jsx";
 import { renderizar } from "../../test/utilidades.jsx";

@@ -1,5 +1,4 @@
 /* Pruebas de las vistas del panel de administración */
-import { describe, it, expect, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import { Rutas } from "../../App.jsx";
 import { categoriasDB, ordenesDB, usuariosDB } from "../../data/db.js";
@@ -67,7 +66,7 @@ describe("Vistas del administrador", () => {
 
     it("Categorías: no elimina una categoría con productos y crea una nueva", () => {
         renderizar(<Rutas />, { ruta: "/admin/categorias", usuario: ADMIN });
-        vi.spyOn(window, "confirm").mockReturnValue(true);
+        spyOn(window, "confirm").and.returnValue(true);
         fireEvent.click(screen.getAllByRole("button", { name: "Eliminar" })[0]);
         expect(screen.getByText(/tiene productos asociados/)).toBeInTheDocument();
 

@@ -1,5 +1,4 @@
 /* Pruebas de ESTADO y EVENTOS: formulario controlado (hook useFormulario) con userEvent */
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Contacto from "./Contacto.jsx";

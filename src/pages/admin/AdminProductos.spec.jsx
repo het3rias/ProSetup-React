@@ -1,5 +1,4 @@
 /* Pruebas del panel: permisos por rol, eliminación con confirmación (mock) y formulario */
-import { describe, it, expect, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import AdminProductos from "./AdminProductos.jsx";
 import AdminProductoForm from "./AdminProductoForm.jsx";
@@ -22,7 +21,7 @@ describe("Admin - Productos", () => {
 
     it("el Administrador elimina un producto tras confirmar y la tabla se actualiza", () => {
         renderizar(<AdminProductos />, { usuario: "admin@duoc.cl" });
-        vi.spyOn(window, "confirm").mockReturnValue(true);
+        spyOn(window, "confirm").and.returnValue(true);
         fireEvent.click(screen.getAllByRole("button", { name: "Eliminar" })[0]);
         expect(productosDB.obtenerPorId(1)).toBeNull();
         expect(screen.getAllByTestId("fila-producto").length).toBe(11);

@@ -1,5 +1,4 @@
 /* Pruebas de control de acceso por rol */
-import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import RutaProtegida from "./RutaProtegida.jsx";
 import { renderizar } from "../test/utilidades.jsx";

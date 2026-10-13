@@ -1,5 +1,4 @@
 /* Pruebas de RENDERIZADO: lista de productos y tarjeta */
-import { describe, it, expect, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import ProductList from "./ProductList.jsx";
@@ -32,10 +31,10 @@ describe("ProductCard", () => {
     });
 
     it("al hacer clic en Añadir llama a onAgregar con el producto", () => {
-        const onAgregar = vi.fn();
+        const onAgregar = jasmine.createSpy("onAgregar");
         conRouter(<ProductCard producto={productoEjemplo} onAgregar={onAgregar} />);
         fireEvent.click(screen.getByRole("button", { name: "Añadir al carrito" }));
-        expect(onAgregar).toHaveBeenCalledExactlyOnceWith(productoEjemplo);
+        expect(onAgregar).toHaveBeenCalledOnceWith(productoEjemplo);
     });
 
     it("muestra precio de oferta con descuento y deshabilita el botón si no hay stock", () => {
