@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { usuariosDB } from "../../data/db.js";
@@ -5,6 +6,7 @@ import { useFormulario } from "../../hooks/useFormulario.js";
 import { validarUsuario } from "../../utils/validaciones.js";
 import CampoFormulario from "../../components/common/CampoFormulario.jsx";
 import SelectRegionComuna from "../../components/common/SelectRegionComuna.jsx";
+import Alerta from "../../components/common/Alerta.jsx";
 
 export const USUARIO_VACIO = {
     run: "", nombre: "", apellidos: "", email: "", password: "", confirmar: "",
@@ -19,16 +21,22 @@ const validarRegistro = (datos) => validarUsuario(datos, {
 /** Registro público: crea un usuario tipo Cliente e inicia sesión. */
 export default function Registro() {
     const { registrar } = useAuth();
+    const [errorGeneral, setErrorGeneral] = useState("");
     const navegar = useNavigate();
     const { valores, errores, manejarCambio, manejarBlur, validarTodo } = useFormulario(USUARIO_VACIO, validarRegistro);
 
-    const enviar = (e) => {
+    const enviar = async (e) => {
         e.preventDefault();
+        setErrorGeneral("");
         if (!validarTodo()) return;
         const { confirmar, ...datos } = valores;
-        registrar({ ...datos, run: datos.run.trim().toUpperCase(), email: datos.email.trim().toLowerCase(),
-            nombre: datos.nombre.trim(), apellidos: datos.apellidos.trim(), direccion: datos.direccion.trim() });
-        navegar("/");
+        try {
+            await registrar({ ...datos, confirmar, run: datos.run.trim().toUpperCase(), email: datos.email.trim().toLowerCase(),
+                nombre: datos.nombre.trim(), apellidos: datos.apellidos.trim(), direccion: datos.direccion.trim() });
+            navegar("/");
+        } catch (error) {
+            setErrorGeneral(error.message);
+        }
     };
 
     const campo = (props) => (
@@ -40,6 +48,7 @@ export default function Registro() {
             <div className="mx-auto" style={{ maxWidth: 720 }}>
                 <div className="card shadow p-4">
                     <h1 className="h3 text-center mb-3">Registro de usuario</h1>
+                    <Alerta tipo="danger" mensaje={errorGeneral} />
                     <form onSubmit={enviar} noValidate>
                         <div className="row">
                             <div className="col-md-6">{campo({ etiqueta: "RUN", name: "run", maxLength: 9, placeholder: "19011022K", requerido: true, ayuda: "Sin puntos ni guion." })}</div>

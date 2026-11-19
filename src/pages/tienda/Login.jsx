@@ -13,11 +13,17 @@ export default function Login() {
     const [errorGeneral, setErrorGeneral] = useState("");
     const { valores, errores, manejarCambio, manejarBlur, validarTodo } = useFormulario({ email: "", password: "" }, validarLogin);
 
-    const enviar = (e) => {
+    const enviar = async (e) => {
         e.preventDefault();
         setErrorGeneral("");
         if (!validarTodo()) return;
-        const usuario = iniciarSesion(valores.email, valores.password);
+        let usuario;
+        try {
+            usuario = await iniciarSesion(valores.email, valores.password);
+        } catch (error) {
+            setErrorGeneral(error.message);
+            return;
+        }
         if (!usuario) {
             setErrorGeneral("Correo o contraseña incorrectos.");
             return;

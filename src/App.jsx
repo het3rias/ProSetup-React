@@ -1,5 +1,8 @@
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext.jsx";
+import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
+import { cargarCatalogo, catalogoListo, errorCatalogo } from "./data/db.js";
+import { useDatos } from "./hooks/useDatos.js";
 import { CarritoProvider } from "./context/CarritoContext.jsx";
 import TiendaLayout from "./components/layout/TiendaLayout.jsx";
 import AdminLayout from "./components/layout/AdminLayout.jsx";
@@ -90,11 +93,31 @@ export function Rutas() {
     );
 }
 
+/** Pide el catálogo al backend y espera a que se restaure la sesión (F5) antes de mostrar las rutas. */
+function Arranque() {
+    const { cargando } = useAuth();
+    const listo = useDatos(() => catalogoListo());
+    const error = useDatos(() => errorCatalogo());
+
+    useEffect(() => { cargarCatalogo(); }, []);
+
+    if (error && !listo) {
+        return (
+            <div className="container my-5 text-center">
+                <p className="alert alert-danger">{error}</p>
+                <button type="button" className="btn btn-primary" onClick={cargarCatalogo}>Reintentar</button>
+            </div>
+        );
+    }
+    if (!listo || cargando) return <p className="text-center my-5">Cargando...</p>;
+    return <Rutas />;
+}
+
 export default function App() {
     return (
         <AuthProvider>
             <CarritoProvider>
-                <Rutas />
+                <Arranque />
             </CarritoProvider>
         </AuthProvider>
     );
