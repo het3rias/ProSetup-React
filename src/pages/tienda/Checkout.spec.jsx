@@ -2,7 +2,7 @@
 import { fireEvent, screen } from "@testing-library/react";
 import Checkout from "./Checkout.jsx";
 import { carritoDB, ordenesDB, productosDB } from "../../data/db.js";
-import { renderizar } from "../../test/utilidades.jsx";
+import { esperar, renderizar } from "../../test/utilidades.jsx";
 
 const opciones = (extra = {}) => ({
     ruta: "/checkout", patron: "/checkout",
@@ -50,11 +50,12 @@ describe("Checkout", () => {
         expect(screen.getByText("La calle es obligatoria.")).toBeInTheDocument();
     });
 
-    it("pago exitoso: crea la orden, descuenta stock, vacía el carrito y va a compra exitosa", () => {
+    it("pago exitoso: crea la orden, descuenta stock, vacía el carrito y va a compra exitosa", async () => {
         renderizar(<Checkout />, opciones());
         llenarDatosInvitado();
         fireEvent.click(screen.getByRole("button", { name: /Pagar ahora/ }));
 
+        await esperar(() => screen.getByTestId("ruta-actual").textContent.startsWith("/compra-exitosa/"));
         const orden = ordenesDB.listar()[0];
         expect(orden.estado).toBe("Pagada");
         expect(orden.total).toBe(49980);
@@ -63,12 +64,13 @@ describe("Checkout", () => {
         expect(screen.getByTestId("ruta-actual").textContent).toBe(`/compra-exitosa/${orden.id}`);
     });
 
-    it("pago rechazado: registra la orden rechazada, mantiene el carrito y va a la vista de error", () => {
+    it("pago rechazado: registra la orden rechazada, mantiene el carrito y va a la vista de error", async () => {
         renderizar(<Checkout />, opciones());
         llenarDatosInvitado();
         fireEvent.click(screen.getByLabelText(/Simular pago rechazado/));
         fireEvent.click(screen.getByRole("button", { name: /Pagar ahora/ }));
 
+        await esperar(() => screen.getByTestId("ruta-actual").textContent.startsWith("/compra-fallida/"));
         const orden = ordenesDB.listar()[0];
         expect(orden.estado).toBe("Rechazada");
         expect(productosDB.obtenerPorId(1).stock).toBe(15);

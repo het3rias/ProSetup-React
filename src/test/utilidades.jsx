@@ -1,5 +1,5 @@
 /* Utilidades compartidas por las pruebas de componentes */
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "../context/AuthContext.jsx";
 import { CarritoProvider } from "../context/CarritoContext.jsx";
@@ -33,6 +33,17 @@ export function renderizar(ui, { ruta = "/", patron, usuario, preparar } = {}) {
             </AuthProvider>
         </MemoryRouter>
     );
+}
+
+/**
+ * Espera (hasta ~1 s) a que se cumpla una condición. Sirve para las acciones ASÍNCRONAS (llamadas a la API).
+ * Ojo: no se puede usar waitFor(() => expect(...)) porque en Jasmine un expect fallido no lanza error,
+ * así que waitFor creería que ya se cumplió. Por eso aquí se lanza el error a mano.
+ */
+export function esperar(condicion) {
+    return waitFor(() => {
+        if (!condicion()) throw new Error("La condición no se cumplió a tiempo.");
+    });
 }
 
 // Producto de ejemplo para pruebas de componentes aislados
