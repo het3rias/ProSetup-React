@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { categoriasDB, productosDB } from "../../data/db.js";
+import Alerta from "../../components/common/Alerta.jsx";
 import ProductForm, { productoAFormulario } from "../../components/admin/ProductForm.jsx";
 
 /** Nuevo producto (/admin/productos/nuevo) o Editar producto (/admin/productos/:id/editar). */
@@ -7,15 +9,20 @@ export default function AdminProductoForm() {
     const { id } = useParams();
     const navegar = useNavigate();
     const esEdicion = Boolean(id);
+    const [errorGeneral, setErrorGeneral] = useState("");
     const producto = esEdicion ? productosDB.obtenerPorId(id) : null;
     const categorias = categoriasDB.listar().map(c => c.nombre);
 
     if (esEdicion && !producto) return <p>Producto no encontrado. <Link to="/admin/productos">Volver</Link></p>;
 
-    const guardar = (datos) => {
-        if (esEdicion) productosDB.actualizar(id, datos);
-        else productosDB.crear(datos);
-        navegar("/admin/productos");
+    const guardar = async (datos) => {
+        try {
+            if (esEdicion) await productosDB.actualizar(id, datos);
+            else await productosDB.crear(datos);
+            navegar("/admin/productos");
+        } catch (error) {
+            setErrorGeneral(error.message);
+        }
     };
 
     return (
@@ -24,6 +31,7 @@ export default function AdminProductoForm() {
             <div className="card shadow-sm mt-3">
                 <div className="card-body">
                     <h1 className="h4 mb-3">{esEdicion ? `Editar producto: ${producto.nombre}` : "Nuevo producto"}</h1>
+                    <Alerta tipo="danger" mensaje={errorGeneral} />
                     <ProductForm
                         valoresIniciales={productoAFormulario(producto)}
                         categorias={categorias}

@@ -3,7 +3,7 @@ import { fireEvent, screen } from "@testing-library/react";
 import AdminProductos from "./AdminProductos.jsx";
 import AdminProductoForm from "./AdminProductoForm.jsx";
 import { productosDB } from "../../data/db.js";
-import { renderizar } from "../../test/utilidades.jsx";
+import { esperar, renderizar } from "../../test/utilidades.jsx";
 
 describe("Admin - Productos", () => {
     it("lista todos los productos del archivo de datos", () => {
@@ -19,13 +19,13 @@ describe("Admin - Productos", () => {
         expect(screen.queryByText("+ Nuevo producto")).not.toBeInTheDocument();
     });
 
-    it("el Administrador elimina un producto tras confirmar y la tabla se actualiza", () => {
+    it("el Administrador elimina un producto tras confirmar y la tabla se actualiza", async () => {
         renderizar(<AdminProductos />, { usuario: "admin@duoc.cl" });
         spyOn(window, "confirm").and.returnValue(true);
         fireEvent.click(screen.getAllByRole("button", { name: "Eliminar" })[0]);
+        expect(await screen.findByText(/eliminado/)).toBeInTheDocument();
         expect(productosDB.obtenerPorId(1)).toBeNull();
         expect(screen.getAllByTestId("fila-producto").length).toBe(11);
-        expect(screen.getByText(/eliminado/)).toBeInTheDocument();
     });
 
     it("el buscador filtra la tabla", () => {
@@ -34,7 +34,7 @@ describe("Admin - Productos", () => {
         expect(screen.getAllByTestId("fila-producto").length).toBe(3);
     });
 
-    it("el formulario de nuevo producto valida el código duplicado y guarda uno válido", () => {
+    it("el formulario de nuevo producto valida el código duplicado y guarda uno válido", async () => {
         renderizar(<AdminProductoForm />, { ruta: "/admin/productos/nuevo", patron: "/admin/productos/nuevo", usuario: "admin@duoc.cl" });
         const escribir = (et, name, value) => fireEvent.change(screen.getByLabelText(et), { target: { name, value } });
         escribir(/Código/, "codigo", "TEC-001");
@@ -47,7 +47,7 @@ describe("Admin - Productos", () => {
 
         escribir(/Código/, "codigo", "TEC-060");
         fireEvent.click(screen.getByRole("button", { name: "Crear producto" }));
+        await esperar(() => screen.getByTestId("ruta-actual").textContent === "/admin/productos");
         expect(productosDB.listar().some(p => p.codigo === "TEC-060")).toBe(true);
-        expect(screen.getByTestId("ruta-actual").textContent).toBe("/admin/productos");
     });
 });

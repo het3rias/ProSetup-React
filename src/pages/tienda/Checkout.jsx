@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useCarrito } from "../../context/CarritoContext.jsx";
-import { ordenesDB, productosDB } from "../../data/db.js";
+import { ordenesDB } from "../../data/db.js";
 import { useFormulario } from "../../hooks/useFormulario.js";
 import { validarCheckout } from "../../utils/validaciones.js";
-import { calcularEnvio, formatearPrecio, validarStockCarrito, ENVIO_GRATIS_DESDE } from "../../utils/tienda.js";
+import { calcularEnvio, formatearPrecio, ENVIO_GRATIS_DESDE } from "../../utils/tienda.js";
 import CampoFormulario from "../../components/common/CampoFormulario.jsx";
 import SelectRegionComuna from "../../components/common/SelectRegionComuna.jsx";
+import Alerta from "../../components/common/Alerta.jsx";
 
 // Si el usuario inició sesión, sus datos se completan automáticamente
 export function datosInicialesCheckout(usuario) {
@@ -34,6 +35,7 @@ export default function Checkout() {
     const { items, subtotal, vaciar } = useCarrito();
     const navegar = useNavigate();
     const [procesando, setProcesando] = useState(false);
+    const [errorGeneral, setErrorGeneral] = useState("");
     const formulario = useFormulario(datosInicialesCheckout(usuario), validarCheckout);
     const { valores, errores, manejarCambio, manejarBlur, validarTodo } = formulario;
 
@@ -42,32 +44,31 @@ export default function Checkout() {
     const envio = calcularEnvio(subtotal, valores.entrega);
     const total = subtotal + envio;
 
-    const pagar = (e) => {
+    // El backend valida el stock, calcula los precios y el total, y descuenta el stock.
+    const pagar = async (e) => {
         e.preventDefault();
         if (!validarTodo()) return;
+        setErrorGeneral("");
         setProcesando(true);
-
-        const problemas = validarStockCarrito(items);
-        const rechazado = valores.simularRechazo || problemas.length > 0;
-        const orden = ordenesDB.crear({
-            estado: rechazado ? "Rechazada" : "Pagada",
-            motivo: problemas.length ? "Stock insuficiente: " + problemas.join(" ") : (valores.simularRechazo ? "El medio de pago rechazó la transacción." : ""),
-            usuarioEmail: usuario?.email || null,
-            cliente: { nombre: valores.nombre.trim(), apellidos: valores.apellidos.trim(), email: valores.email.trim().toLowerCase() },
-            direccion: valores.entrega === "domicilio"
-                ? { calle: valores.calle.trim(), departamento: valores.departamento.trim(), region: valores.region, comuna: valores.comuna, indicaciones: valores.indicaciones.trim() }
-                : { calle: "Retiro en tienda", departamento: "", region: "", comuna: "", indicaciones: valores.indicaciones.trim() },
-            entrega: valores.entrega,
-            items: items.map(i => ({ id: i.id, codigo: i.codigo, nombre: i.nombre, precio: i.precioUnitario, cantidad: i.cantidad, imagen: i.imagen })),
-            subtotal, costoEnvio: envio, total
-        });
-
-        if (rechazado) {
-            navegar(`/compra-fallida/${orden.id}`);
-        } else {
-            productosDB.descontarStock(items);
-            vaciar();
-            navegar(`/compra-exitosa/${orden.id}`);
+        try {
+            const orden = await ordenesDB.crear({
+                cliente: { nombre: valores.nombre.trim(), apellidos: valores.apellidos.trim(), email: valores.email.trim().toLowerCase() },
+                direccion: valores.entrega === "domicilio"
+                    ? { calle: valores.calle.trim(), departamento: valores.departamento.trim(), region: valores.region, comuna: valores.comuna, indicaciones: valores.indicaciones.trim() }
+                    : { calle: "Retiro en tienda", departamento: "", region: "", comuna: "", indicaciones: valores.indicaciones.trim() },
+                entrega: valores.entrega,
+                items: items.map(i => ({ id: i.id, cantidad: i.cantidad })),
+                simularRechazo: valores.simularRechazo
+            });
+            if (orden.estado === "Rechazada") {
+                navegar(`/compra-fallida/${orden.id}`);
+            } else {
+                vaciar();
+                navegar(`/compra-exitosa/${orden.id}`);
+            }
+        } catch (error) {
+            setErrorGeneral(error.message);
+            setProcesando(false);
         }
     };
 
@@ -79,6 +80,7 @@ export default function Checkout() {
                     ¿Ya tienes cuenta? <Link to="/login" state={{ desde: "/checkout" }}>Inicia sesión</Link> y completaremos tus datos automáticamente.
                 </p>
             )}
+            <Alerta tipo="danger" mensaje={errorGeneral} />
             <form className="row g-4" onSubmit={pagar} noValidate>
                 <div className="col-lg-7">
                     <div className="card shadow-sm mb-4">

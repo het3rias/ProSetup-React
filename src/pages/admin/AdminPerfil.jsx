@@ -9,19 +9,27 @@ import Alerta from "../../components/common/Alerta.jsx";
 export default function AdminPerfil() {
     const { usuario } = useAuth();
     const [mensaje, setMensaje] = useState("");
+    const [error, setError] = useState("");
 
     const iniciales = { ...usuario, password: "", confirmar: "", telefono: usuario.telefono || "", fechaNacimiento: usuario.fechaNacimiento || "" };
     const validar = (datos) => validarUsuario(datos, { esEdicion: true });
 
-    const guardar = (datos) => {
+    const guardar = async (datos) => {
         const { run, email, tipoUsuario, ...editables } = datos;
-        usuariosDB.actualizar(usuario.email, editables);
-        setMensaje("Perfil actualizado correctamente.");
+        try {
+            await usuariosDB.actualizarPerfil(editables);
+            setError("");
+            setMensaje("Perfil actualizado correctamente.");
+        } catch (e) {
+            setMensaje("");
+            setError(e.message);
+        }
     };
 
     return (
         <>
             <h1 className="h3 mb-3">Mi perfil</h1>
+            <Alerta tipo="danger" mensaje={error} onCerrar={() => setError("")} />
             <Alerta tipo="success" mensaje={mensaje} onCerrar={() => setMensaje("")} />
             <div className="card shadow-sm">
                 <div className="card-body">

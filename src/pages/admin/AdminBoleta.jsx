@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { ordenesDB } from "../../data/db.js";
@@ -14,6 +15,17 @@ export default function AdminBoleta() {
     const { esAdmin } = useAuth();
     const orden = useDatos(() => ordenesDB.obtenerPorId(id), [id]);
 
+    const [error, setError] = useState("");
+
+    const cambiarEstado = async (e) => {
+        try {
+            setError("");
+            await ordenesDB.actualizarEstado(orden.id, e.target.value);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
     if (!orden) return <p>Orden no encontrada. <Link to="/admin/ordenes">Volver</Link></p>;
 
     return (
@@ -25,6 +37,7 @@ export default function AdminBoleta() {
                         <h1 className="h4 mb-0">Boleta N° {orden.id} <EstadoOrden estado={orden.estado} /></h1>
                         <small className="text-muted">{orden.codigo} · {formatearFecha(orden.fecha)}</small>
                     </div>
+                    {error && <div className="alert alert-danger">{error}</div>}
                     {orden.motivo && <div className="alert alert-danger">{orden.motivo}</div>}
                     <DatosOrden orden={orden} />
                     <TablaDetalleCompra items={orden.items} />
@@ -34,7 +47,7 @@ export default function AdminBoleta() {
                             <>
                                 <label htmlFor="estado-orden" className="form-label mb-0">Cambiar estado:</label>
                                 <select id="estado-orden" className="form-select w-auto" value={orden.estado}
-                                    onChange={(e) => ordenesDB.actualizarEstado(orden.id, e.target.value)}>
+                                    onChange={cambiarEstado}>
                                     {ESTADOS_ORDEN.filter(e => e !== "Rechazada").map(e => <option key={e} value={e}>{e}</option>)}
                                 </select>
                             </>

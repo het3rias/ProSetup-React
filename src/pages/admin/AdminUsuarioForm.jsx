@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { usuariosDB } from "../../data/db.js";
 import { validarUsuario } from "../../utils/validaciones.js";
 import UserForm from "../../components/admin/UserForm.jsx";
+import Alerta from "../../components/common/Alerta.jsx";
 
 /** Nuevo usuario o Editar usuario (desde el panel, se puede elegir el rol). */
 export default function AdminUsuarioForm() {
     const { run } = useParams();
     const navegar = useNavigate();
+    const [errorGeneral, setErrorGeneral] = useState("");
     const usuario = run ? usuariosDB.obtenerPorRun(run) : null;
     const esEdicion = Boolean(run);
 
@@ -25,10 +28,14 @@ export default function AdminUsuarioForm() {
         existeEmail: (e) => Boolean(usuariosDB.obtenerPorEmail(e)) && e !== usuario?.email
     });
 
-    const guardar = (datos) => {
-        if (esEdicion) usuariosDB.actualizar(usuario.email, datos);
-        else usuariosDB.crear(datos);
-        navegar("/admin/usuarios");
+    const guardar = async (datos) => {
+        try {
+            if (esEdicion) await usuariosDB.actualizar(usuario.email, datos);
+            else await usuariosDB.crear(datos);
+            navegar("/admin/usuarios");
+        } catch (error) {
+            setErrorGeneral(error.message);
+        }
     };
 
     return (
@@ -37,6 +44,7 @@ export default function AdminUsuarioForm() {
             <div className="card shadow-sm mt-3">
                 <div className="card-body">
                     <h1 className="h4 mb-3">{esEdicion ? `Editar usuario: ${usuario.nombre} ${usuario.apellidos}` : "Nuevo usuario"}</h1>
+                    <Alerta tipo="danger" mensaje={errorGeneral} />
                     <UserForm valoresIniciales={iniciales} validar={validar} onGuardar={guardar} esEdicion={esEdicion}
                         onCancelar={() => navegar("/admin/usuarios")} textoBoton={esEdicion ? "Guardar cambios" : "Crear usuario"} />
                 </div>

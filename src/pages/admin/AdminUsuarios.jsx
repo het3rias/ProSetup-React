@@ -17,14 +17,18 @@ export default function AdminUsuarios() {
     const filtrados = usuarios.filter(u => (!tipo || u.tipoUsuario === tipo) &&
         (!t || u.run.toLowerCase().includes(t) || u.email.includes(t) || `${u.nombre} ${u.apellidos}`.toLowerCase().includes(t)));
 
-    const eliminar = (u) => {
+    const eliminar = async (u) => {
         if (u.email === actual.email) {
             setAviso({ tipo: "danger", texto: "No puedes eliminar tu propia cuenta." });
             return;
         }
         if (!window.confirm(`¿Eliminar a ${u.nombre} ${u.apellidos}?`)) return;
-        usuariosDB.eliminar(u.email);
-        setAviso({ tipo: "success", texto: "Usuario eliminado." });
+        try {
+            await usuariosDB.eliminar(u.email);
+            setAviso({ tipo: "success", texto: "Usuario eliminado." });
+        } catch (error) {
+            setAviso({ tipo: "danger", texto: error.message });
+        }
     };
 
     return (

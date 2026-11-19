@@ -9,9 +9,14 @@ export default function AdminCategorias() {
     const productos = useDatos(() => productosDB.listar());
     const [aviso, setAviso] = useState(null);
 
-    const eliminar = (categoria) => {
+    const eliminar = async (categoria) => {
         if (!window.confirm(`¿Eliminar la categoría "${categoria.nombre}"?`)) return;
-        const resultado = categoriasDB.eliminar(categoria.id);
+        let resultado;
+        try {
+            resultado = await categoriasDB.eliminar(categoria.id);
+        } catch (error) {
+            resultado = { ok: false, mensaje: error.message };
+        }
         setAviso({ tipo: resultado.ok ? "success" : "danger", texto: resultado.mensaje });
     };
 

@@ -2,7 +2,7 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { Rutas } from "../../App.jsx";
 import { categoriasDB, ordenesDB, usuariosDB } from "../../data/db.js";
-import { renderizar } from "../../test/utilidades.jsx";
+import { esperar, renderizar } from "../../test/utilidades.jsx";
 
 const ADMIN = "admin@duoc.cl";
 
@@ -35,11 +35,11 @@ describe("Vistas del administrador", () => {
         expect(screen.getByTestId("sin-ordenes")).toBeInTheDocument();
     });
 
-    it("Mostrar boleta permite al Administrador cambiar el estado", () => {
+    it("Mostrar boleta permite al Administrador cambiar el estado", async () => {
         renderizar(<Rutas />, { ruta: "/admin/ordenes/1001", usuario: ADMIN });
         expect(screen.getByRole("heading", { level: 1 }).textContent).toContain("Boleta N° 1001");
         fireEvent.change(screen.getByLabelText("Cambiar estado:"), { target: { value: "Entregada" } });
-        expect(ordenesDB.obtenerPorId(1001).estado).toBe("Entregada");
+        await esperar(() => ordenesDB.obtenerPorId(1001).estado === "Entregada");
     });
 
     it("Productos críticos lista los que llegaron al umbral", () => {
@@ -48,14 +48,14 @@ describe("Vistas del administrador", () => {
         expect(screen.getByText("Soporte de Monitor Articulado")).toBeInTheDocument();
     });
 
-    it("Mostrar producto y Editar producto", () => {
+    it("Mostrar producto y Editar producto", async () => {
         renderizar(<Rutas />, { ruta: "/admin/productos/1", usuario: ADMIN });
         fireEvent.click(screen.getByRole("link", { name: "Editar producto" }));
         const precio = screen.getByLabelText(/^Precio \*/);
         expect(precio.value).toBe("45990");
         fireEvent.change(precio, { target: { name: "precio", value: "40000" } });
         fireEvent.click(screen.getByRole("button", { name: "Guardar cambios" }));
-        expect(screen.getByTestId("ruta-actual").textContent).toBe("/admin/productos");
+        await esperar(() => screen.getByTestId("ruta-actual").textContent === "/admin/productos");
     });
 
     it("Reportes muestra el total vendido", () => {
@@ -64,16 +64,16 @@ describe("Vistas del administrador", () => {
         expect(screen.getByRole("heading", { name: "Productos más vendidos" })).toBeInTheDocument();
     });
 
-    it("Categorías: no elimina una categoría con productos y crea una nueva", () => {
+    it("Categorías: no elimina una categoría con productos y crea una nueva", async () => {
         renderizar(<Rutas />, { ruta: "/admin/categorias", usuario: ADMIN });
         spyOn(window, "confirm").and.returnValue(true);
         fireEvent.click(screen.getAllByRole("button", { name: "Eliminar" })[0]);
-        expect(screen.getByText(/tiene productos asociados/)).toBeInTheDocument();
+        expect(await screen.findByText(/tiene productos/)).toBeInTheDocument();
 
         fireEvent.click(screen.getByRole("link", { name: "+ Nueva categoría" }));
         fireEvent.change(screen.getByLabelText(/Nombre/), { target: { name: "nombre", value: "Redes" } });
         fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
-        expect(categoriasDB.existeNombre("Redes")).toBe(true);
+        await esperar(() => categoriasDB.existeNombre("Redes"));
     });
 
     it("Mostrar usuario incluye su historial de compras", () => {
@@ -88,19 +88,19 @@ describe("Vistas del administrador", () => {
         expect(screen.getByText("No puedes eliminar tu propia cuenta.")).toBeInTheDocument();
     });
 
-    it("Editar usuario cambia el rol", () => {
+    it("Editar usuario cambia el rol", async () => {
         renderizar(<Rutas />, { ruta: "/admin/usuarios/204567891/editar", usuario: ADMIN });
         fireEvent.change(screen.getByLabelText(/Tipo de usuario/), { target: { name: "tipoUsuario", value: "Vendedor" } });
         fireEvent.click(screen.getByRole("button", { name: "Guardar cambios" }));
-        expect(usuariosDB.obtenerPorEmail("cliente@gmail.com").tipoUsuario).toBe("Vendedor");
+        await esperar(() => usuariosDB.obtenerPorEmail("cliente@gmail.com").tipoUsuario === "Vendedor");
     });
 
-    it("Perfil actualiza los datos del usuario conectado", () => {
+    it("Perfil actualiza los datos del usuario conectado", async () => {
         renderizar(<Rutas />, { ruta: "/admin/perfil", usuario: ADMIN });
         expect(screen.getByLabelText(/RUN/)).toBeDisabled();
         fireEvent.change(screen.getByLabelText(/Teléfono/), { target: { name: "telefono", value: "987654321" } });
         fireEvent.click(screen.getByRole("button", { name: "Guardar perfil" }));
-        expect(screen.getByText("Perfil actualizado correctamente.")).toBeInTheDocument();
+        expect(await screen.findByText("Perfil actualizado correctamente.")).toBeInTheDocument();
         expect(usuariosDB.obtenerPorEmail(ADMIN).telefono).toBe("987654321");
     });
 });

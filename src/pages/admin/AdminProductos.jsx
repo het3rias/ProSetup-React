@@ -20,10 +20,14 @@ export default function AdminProductos() {
     const t = texto.trim().toLowerCase();
     const filtrados = productos.filter(p => !t || p.nombre.toLowerCase().includes(t) || p.codigo.toLowerCase().includes(t) || p.categoria.toLowerCase().includes(t));
 
-    const eliminar = (producto) => {
+    const eliminar = async (producto) => {
         if (!window.confirm(`¿Eliminar "${producto.nombre}"?`)) return;
-        productosDB.eliminar(producto.id);
-        setMensaje(`Producto "${producto.nombre}" eliminado.`);
+        try {
+            await productosDB.eliminar(producto.id);
+            setMensaje(`Producto "${producto.nombre}" eliminado.`);
+        } catch (error) {
+            setMensaje(error.message);
+        }
     };
 
     return (

@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { categoriasDB } from "../../data/db.js";
 import { useFormulario } from "../../hooks/useFormulario.js";
 import { validarCategoria } from "../../utils/validaciones.js";
 import CampoFormulario from "../../components/common/CampoFormulario.jsx";
+import Alerta from "../../components/common/Alerta.jsx";
 
 /** Nueva categoría o Editar categoría. */
 export default function AdminCategoriaForm() {
     const { id } = useParams();
     const navegar = useNavigate();
+    const [errorGeneral, setErrorGeneral] = useState("");
     const categoria = id ? categoriasDB.obtenerPorId(id) : null;
     const validar = (datos) => validarCategoria(datos, { existeNombre: (nombre) => categoriasDB.existeNombre(nombre, id || null) });
     const { valores, errores, manejarCambio, manejarBlur, validarTodo } = useFormulario(
@@ -15,13 +18,17 @@ export default function AdminCategoriaForm() {
 
     if (id && !categoria) return <p>Categoría no encontrada. <Link to="/admin/categorias">Volver</Link></p>;
 
-    const guardar = (e) => {
+    const guardar = async (e) => {
         e.preventDefault();
         if (!validarTodo()) return;
         const datos = { nombre: valores.nombre.trim(), descripcion: valores.descripcion.trim(), imagen: valores.imagen.trim() || "/img/placeholder.png" };
-        if (id) categoriasDB.actualizar(id, datos);
-        else categoriasDB.crear(datos);
-        navegar("/admin/categorias");
+        try {
+            if (id) await categoriasDB.actualizar(id, datos);
+            else await categoriasDB.crear(datos);
+            navegar("/admin/categorias");
+        } catch (error) {
+            setErrorGeneral(error.message);
+        }
     };
 
     return (
@@ -30,6 +37,7 @@ export default function AdminCategoriaForm() {
             <div className="card shadow-sm mt-3" style={{ maxWidth: 640 }}>
                 <div className="card-body">
                     <h1 className="h4 mb-3">{id ? "Editar categoría" : "Nueva categoría"}</h1>
+                    <Alerta tipo="danger" mensaje={errorGeneral} />
                     <form onSubmit={guardar} noValidate>
                         <CampoFormulario etiqueta="Nombre" name="nombre" value={valores.nombre} onChange={manejarCambio} onBlur={manejarBlur}
                             error={errores.nombre} maxLength={50} requerido
