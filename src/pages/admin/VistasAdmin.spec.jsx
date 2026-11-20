@@ -22,6 +22,21 @@ describe("Vistas del administrador", () => {
         expect(menu.textContent).not.toContain("Reportes");
     });
 
+    it("el Vendedor solo ve Órdenes y Productos en el menú y entra directo a las órdenes", () => {
+        renderizar(<Rutas />, { ruta: "/admin", usuario: "vendedor@duoc.cl" });
+        const menu = screen.getByRole("navigation", { name: "Menú del panel" });
+        expect(menu.textContent).toContain("Órdenes");
+        expect(menu.textContent).toContain("Productos");
+        expect(menu.textContent).not.toContain("Dashboard");
+        expect(menu.textContent).not.toContain("Perfil");
+        expect(screen.getByTestId("ruta-actual").textContent).toBe("/admin/ordenes");
+    });
+
+    it("el Vendedor no puede abrir productos críticos ni su perfil por URL", () => {
+        renderizar(<Rutas />, { ruta: "/admin/productos/criticos", usuario: "vendedor@duoc.cl" });
+        expect(screen.queryByText("Soporte de Monitor Articulado")).not.toBeInTheDocument();
+    });
+
     it("el Vendedor no puede abrir el mantenedor de usuarios por URL", () => {
         renderizar(<Rutas />, { ruta: "/admin/usuarios", usuario: "vendedor@duoc.cl" });
         expect(screen.getByTestId("acceso-denegado")).toBeInTheDocument();

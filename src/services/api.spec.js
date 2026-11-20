@@ -17,7 +17,7 @@ describe("Cliente de la API (api.js)", () => {
         const espia = spyOn(window, "fetch").and.returnValue(respuesta(200, []));
         await api.productos.listar();
         const [url, opciones] = espia.calls.mostRecent().args;
-        expect(url).toContain("/api/productos");
+        expect(url).toContain("/api/v1/productos");
         expect(opciones.headers.Authorization).toBe("Bearer abc");
     });
 
