@@ -58,7 +58,7 @@ async function renovarSesion() {
     const refresco = tokens.obtenerRefresco();
     if (!refresco) return false;
     if (!renovando) {
-        renovando = pedir("/api/auth/refresh", { metodo: "POST", cuerpo: { refreshToken: refresco }, autenticado: false })
+        renovando = pedir("/api/v1/auth/refresh", { metodo: "POST", cuerpo: { refreshToken: refresco }, autenticado: false })
             .then((respuesta) => { tokens.guardar(respuesta); return true; })
             .catch(() => { tokens.borrar(); alExpirar(); return false; })
             .finally(() => { renovando = null; });
@@ -102,33 +102,33 @@ async function pedir(ruta, { metodo = "GET", cuerpo, autenticado = true, reinten
 
 export const api = {
     autenticacion: {
-        login: (email, password) => pedir("/api/auth/login", { metodo: "POST", cuerpo: { email, password }, autenticado: false }),
-        registrar: (datos) => pedir("/api/auth/register", { metodo: "POST", cuerpo: datos, autenticado: false }),
-        yo: () => pedir("/api/auth/me")
+        login: (email, password) => pedir("/api/v1/auth/login", { metodo: "POST", cuerpo: { email, password }, autenticado: false }),
+        registrar: (datos) => pedir("/api/v1/auth/register", { metodo: "POST", cuerpo: datos, autenticado: false }),
+        yo: () => pedir("/api/v1/auth/me")
     },
     productos: {
-        listar: () => pedir("/api/productos"),
-        crear: (datos) => pedir("/api/productos", { metodo: "POST", cuerpo: datos }),
-        actualizar: (id, datos) => pedir(`/api/productos/${id}`, { metodo: "PUT", cuerpo: datos }),
-        eliminar: (id) => pedir(`/api/productos/${id}`, { metodo: "DELETE" })
+        listar: () => pedir("/api/v1/productos"),
+        crear: (datos) => pedir("/api/v1/productos", { metodo: "POST", cuerpo: datos }),
+        actualizar: (id, datos) => pedir(`/api/v1/productos/${id}`, { metodo: "PUT", cuerpo: datos }),
+        eliminar: (id) => pedir(`/api/v1/productos/${id}`, { metodo: "DELETE" })
     },
     categorias: {
-        listar: () => pedir("/api/categorias"),
-        crear: (datos) => pedir("/api/categorias", { metodo: "POST", cuerpo: datos }),
-        actualizar: (id, datos) => pedir(`/api/categorias/${id}`, { metodo: "PUT", cuerpo: datos }),
-        eliminar: (id) => pedir(`/api/categorias/${id}`, { metodo: "DELETE" })
+        listar: () => pedir("/api/v1/categorias"),
+        crear: (datos) => pedir("/api/v1/categorias", { metodo: "POST", cuerpo: datos }),
+        actualizar: (id, datos) => pedir(`/api/v1/categorias/${id}`, { metodo: "PUT", cuerpo: datos }),
+        eliminar: (id) => pedir(`/api/v1/categorias/${id}`, { metodo: "DELETE" })
     },
     usuarios: {
-        listar: () => pedir("/api/usuarios"),
-        crear: (datos) => pedir("/api/usuarios", { metodo: "POST", cuerpo: datos }),
-        actualizar: (id, datos) => pedir(`/api/usuarios/${id}`, { metodo: "PUT", cuerpo: datos }),
-        eliminar: (id) => pedir(`/api/usuarios/${id}`, { metodo: "DELETE" }),
-        actualizarPerfil: (datos) => pedir("/api/usuarios/me", { metodo: "PUT", cuerpo: datos })
+        listar: () => pedir("/api/v1/usuarios"),
+        crear: (datos) => pedir("/api/v1/usuarios", { metodo: "POST", cuerpo: datos }),
+        actualizar: (id, datos) => pedir(`/api/v1/usuarios/${id}`, { metodo: "PUT", cuerpo: datos }),
+        eliminar: (id) => pedir(`/api/v1/usuarios/${id}`, { metodo: "DELETE" }),
+        actualizarPerfil: (datos) => pedir("/api/v1/usuarios/me", { metodo: "PUT", cuerpo: datos })
     },
     ordenes: {
-        listar: () => pedir("/api/ordenes"),
-        mias: () => pedir("/api/ordenes/mias"),
-        crear: (datos) => pedir("/api/ordenes", { metodo: "POST", cuerpo: datos }),
-        actualizarEstado: (id, estado) => pedir(`/api/ordenes/${id}/estado`, { metodo: "PUT", cuerpo: { estado } })
+        listar: () => pedir("/api/v1/ordenes"),
+        mias: () => pedir("/api/v1/ordenes/mias"),
+        crear: (datos) => pedir("/api/v1/ordenes", { metodo: "POST", cuerpo: datos }),
+        actualizarEstado: (id, estado) => pedir(`/api/v1/ordenes/${id}/estado`, { metodo: "PUT", cuerpo: { estado } })
     }
 };
