@@ -4,13 +4,13 @@ import { useAuth } from "../../context/AuthContext.jsx";
 
 // Menú del panel. "roles" indica quién puede ver cada opción.
 export const MENU_ADMIN = [
-    { ruta: "/admin", texto: "Dashboard", icono: "🏠", roles: ["Administrador", "Vendedor"], exacta: true },
+    { ruta: "/admin", texto: "Dashboard", icono: "🏠", roles: ["Administrador"], exacta: true },
     { ruta: "/admin/ordenes", texto: "Órdenes", icono: "🧾", roles: ["Administrador", "Vendedor"] },
     { ruta: "/admin/productos", texto: "Productos", icono: "📦", roles: ["Administrador", "Vendedor"] },
     { ruta: "/admin/categorias", texto: "Categorías", icono: "🏷️", roles: ["Administrador"] },
     { ruta: "/admin/usuarios", texto: "Usuarios", icono: "👤", roles: ["Administrador"] },
     { ruta: "/admin/reportes", texto: "Reportes", icono: "📊", roles: ["Administrador"] },
-    { ruta: "/admin/perfil", texto: "Perfil", icono: "⚙️", roles: ["Administrador", "Vendedor"] }
+    { ruta: "/admin/perfil", texto: "Perfil", icono: "⚙️", roles: ["Administrador"] }
 ];
 
 /** Estructura del panel de administración: menú lateral + contenido. */

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { cargarCatalogo, catalogoListo, errorCatalogo } from "./data/db.js";
 import { useDatos } from "./hooks/useDatos.js";
@@ -42,6 +42,11 @@ import AdminPerfil from "./pages/admin/AdminPerfil.jsx";
 
 const STAFF = ["Administrador", "Vendedor"];
 const SOLO_ADMIN = ["Administrador"];
+// El Vendedor solo ve productos y órdenes: al entrar al panel va directo a las órdenes
+function InicioPanel() {
+    const { esVendedor } = useAuth();
+    return esVendedor ? <Navigate to="/admin/ordenes" replace /> : <AdminDashboard />;
+}
 const soloAdmin = (elemento) => <RutaProtegida roles={SOLO_ADMIN}>{elemento}</RutaProtegida>;
 
 /** Rutas de la aplicación (ver diagrama de flujo de navegación del Anexo 1). */
@@ -71,11 +76,11 @@ export function Rutas() {
 
             {/* ----- Panel de administración (Administrador y Vendedor) ----- */}
             <Route path="/admin" element={<RutaProtegida roles={STAFF}><AdminLayout /></RutaProtegida>}>
-                <Route index element={<AdminDashboard />} />
+                <Route index element={<InicioPanel />} />
                 <Route path="ordenes" element={<AdminOrdenes />} />
                 <Route path="ordenes/:id" element={<AdminBoleta />} />
                 <Route path="productos" element={<AdminProductos />} />
-                <Route path="productos/criticos" element={<AdminProductosCriticos />} />
+                <Route path="productos/criticos" element={soloAdmin(<AdminProductosCriticos />)} />
                 <Route path="productos/nuevo" element={soloAdmin(<AdminProductoForm />)} />
                 <Route path="productos/:id" element={<AdminProductoDetalle />} />
                 <Route path="productos/:id/editar" element={soloAdmin(<AdminProductoForm />)} />
@@ -87,7 +92,7 @@ export function Rutas() {
                 <Route path="usuarios/:run" element={soloAdmin(<AdminUsuarioDetalle />)} />
                 <Route path="usuarios/:run/editar" element={soloAdmin(<AdminUsuarioForm />)} />
                 <Route path="reportes" element={soloAdmin(<AdminReportes />)} />
-                <Route path="perfil" element={<AdminPerfil />} />
+                <Route path="perfil" element={soloAdmin(<AdminPerfil />)} />
             </Route>
         </Routes>
     );

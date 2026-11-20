@@ -35,7 +35,7 @@ export default function AdminProductos() {
             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                 <h1 className="h3 mb-0">Productos</h1>
                 <div className="d-flex gap-2 flex-wrap">
-                    <Link to="/admin/productos/criticos" className="btn btn-outline-warning">Productos críticos</Link>
+                    {esAdmin && <Link to="/admin/productos/criticos" className="btn btn-outline-warning">Productos críticos</Link>}
                     {esAdmin && <Link to="/admin/reportes" className="btn btn-outline-secondary">Reportes</Link>}
                     {esAdmin && <Link to="/admin/productos/nuevo" className="btn btn-primary">+ Nuevo producto</Link>}
                 </div>
