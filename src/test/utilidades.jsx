@@ -40,10 +40,11 @@ export function renderizar(ui, { ruta = "/", patron, usuario, preparar } = {}) {
  * Ojo: no se puede usar waitFor(() => expect(...)) porque en Jasmine un expect fallido no lanza error,
  * así que waitFor creería que ya se cumplió. Por eso aquí se lanza el error a mano.
  */
-export function esperar(condicion) {
-    return waitFor(() => {
+export async function esperar(condicion) {
+    await waitFor(() => {
         if (!condicion()) throw new Error("La condición no se cumplió a tiempo.");
     });
+    expect(condicion()).toBe(true); // deja registrada una expectativa en la prueba
 }
 
 // Producto de ejemplo para pruebas de componentes aislados
